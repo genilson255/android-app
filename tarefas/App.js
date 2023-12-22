@@ -1,9 +1,20 @@
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, FlatList } from 'react-native';
 import React, {useState} from 'react';
 import {FontAwesome} from "@expo/vector-icons"
+import Tarefa from './src/Tarefa';
 
 export default function App() {
   const [tarefa, setTarefa] = useState('');
+  const [lista, setLista ] = useState([
+    {
+      key: '1',
+      item: 'Comprar pao'
+    },
+    {
+      key: '2',
+      item: 'Comprar um carro'
+    },
+  ]);
 
   function getText(){
     alert("Deu certo")
@@ -28,6 +39,12 @@ export default function App() {
 
         </TouchableOpacity>
       </View>
+      <FlatList
+        data={lista}
+        keyExtractor={ (item) => item.key }
+        renderItem={ ({ item }) => <Tarefa data={item}/>}
+        style={styles.list}
+      />
 
     </View>
 
@@ -37,7 +54,7 @@ export default function App() {
 const styles = StyleSheet.create({
   container:{
     flex: 1,
-    backgroundColor: "#222555",
+    backgroundColor: "#7B68EE",
     paddingTop: 25,
   },
   title: {
@@ -74,5 +91,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
     // paddingHorizontal: 8
-  }
+  },
+  list:{
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingStart: '4%',
+    paddingEnd: '4%'
+  },
 })
