@@ -5,19 +5,28 @@ import Tarefa from './src/Tarefa';
 
 export default function App() {
   const [tarefa, setTarefa] = useState('');
-  const [lista, setLista ] = useState([
-    {
-      key: '1',
-      item: 'Comprar pao'
-    },
-    {
-      key: '2',
-      item: 'Comprar um carro'
-    },
-  ]);
+  const [lista, setLista ] = useState([]);
 
   function getText(){
-    alert("Deu certo")
+    if (tarefa === ''){
+      return;
+    }
+    let dados = {
+      key: Date.now(),
+      item: tarefa
+    }
+    // Pego tudo que ja temho, depois adiciona os itens novos
+    setLista(oldArray => [dados, ...oldArray]);
+
+    // Zerando o campo input
+    setTarefa("")
+  }
+
+  function handleDeleteItem(item){
+    let filterItem = lista.filter((tarefa) => {
+      return (tarefa.item !== item)
+    })
+    setLista(filterItem)
   }
 
   return (
@@ -42,7 +51,7 @@ export default function App() {
       <FlatList
         data={lista}
         keyExtractor={ (item) => item.key }
-        renderItem={ ({ item }) => <Tarefa data={item}/>}
+        renderItem={ ({ item }) => <Tarefa data={item} deleteItem={ () => handleDeleteItem(item.item)}/>}
         style={styles.list}
       />
 
