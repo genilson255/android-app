@@ -1,13 +1,13 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-const authStack = createNativeStackNavigator();
+const stack = createNativeStackNavigator();
 import Dashboard from '../pages/Dashboard';
 
     function AppRoutes(){
         return(
-            <authStack.Navigator>
-                <authStack.Screen  name='Dashboard' component={Dashboard}/>
-            </authStack.Navigator>
+            <stack.Navigator>
+                <stack.Screen  name='Dashboard' component={Dashboard}/>
+            </stack.Navigator>
         )
     }
 

@@ -3,12 +3,12 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import SignIn from '../pages/SignIn';
 
-const authStack = createNativeStackNavigator();
+const stack = createNativeStackNavigator();
     function AuthRoutes(){
         return(
-            <authStack.Navigator>
-                <authStack.Screen  name='SignIn' component={SignIn}/>
-            </authStack.Navigator>
+            <stack.Navigator>
+                <stack.Screen  name='SignIn' component={SignIn}/>
+            </stack.Navigator>
         )
     }
 
