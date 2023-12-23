@@ -6,7 +6,7 @@ export default function App() {
   return (
     <View>
       <Text>Sujeito Pizzaolo</Text>
-      <StatusBar backgroundColor="#1d1d2e" barStyle="dark-content" translucent={false}/>
+      <StatusBar backgroundColor="#1d1d2e" barStyle="light-content" translucent={false}/>
       <SignIn />
     </View>
   );
