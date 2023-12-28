@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {View, Text, StyleSheet, Image, TextInput, TouchableOpacity} from 'react-native';
+import { AuthContext } from '../../contexts/AuthContext';
 
 export default function SignIn(){
+    const {user, isAuthenticated} = useContext(AuthContext)
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
@@ -19,6 +22,7 @@ export default function SignIn(){
                 style={styles.logo}
                 source={require("../logos/logo.png")}
                 />
+            <Text style={styles.nameUser}>{user.name}</Text>
                 <View style={styles.inputContainer}>
                     <TextInput
                         placeholder='Digite seu e-mail'
@@ -85,4 +89,8 @@ const styles = StyleSheet.create({
         color: "#101026"
 
     },
+    nameUser:{
+        color: "#fff",
+        justifyContent: 'flex-end'
+    }
 })
