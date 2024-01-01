@@ -27,7 +27,7 @@ const stack = createNativeStackNavigator<StackParamsList>();
                 <stack.Screen
                  name='Order'
                  component={Order}
-                 options={{headerShown: true}}
+                 options={{headerShown: false}}
                 />
             </stack.Navigator>
         )
