@@ -29,10 +29,6 @@ export function ModalPicker({
         handleCloseModal();
     }
 
-    function handleChangeCategory(item: CategoryProps){
-        selectedItem(item);
-    }
-
 
     const option = options.map((item, index) => (
         <TouchableOpacity  key={index} style={styles.options} onPress={() => onPressItem(item)}>

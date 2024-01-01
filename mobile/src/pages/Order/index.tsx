@@ -21,6 +21,12 @@ export type RouteDetailParams = {
     }
 }
 
+export type ProductProps = {
+    id: string,
+    name: string,
+    price: string
+}
+
 export type CategoryProps = {
     id: string,
     name: string
@@ -33,9 +39,14 @@ export default function Order(){
     const route = useRoute<OrderRouterProps>();
     const navigation = useNavigation();
 
-    const [category, setCategory] = useState<CategoryProps[] | []>([])
-    const [categorySelected, setCategorySelected] = useState<CategoryProps>();
-    const [modalCategoryVisible, setModalCategoryVisible] = useState(false)
+    const [category, setCategory] = useState<CategoryProps[] | []>([]);
+    const [categorySelected, setCategorySelected] = useState<CategoryProps | undefined>();
+    const [modalCategoryVisible, setModalCategoryVisible] = useState(false);
+
+    const [products, setProducts] = useState<ProductProps[] | []>([]);
+    const [productSelected, setProductSelected] = useState<ProductProps | undefined>();
+    const [modalProductVisible, setModalProductVisible] = useState(false);
+
     const [amount, setAmount] = useState('1');
 
     useEffect(() => {
@@ -45,7 +56,25 @@ export default function Order(){
             setCategorySelected(response.data[0])
         }
         loadInfo();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        async function loadProducts(){
+            // Buscando produto de uma categoria selecionada
+            const response = await api.get("/category/product", {
+                params:{
+                    category_id: categorySelected?.id
+                }
+            })
+            //console.log(response.data);
+            setProducts(response.data);
+            setProductSelected(response.data[0])
+
+        }
+
+        loadProducts();
+
+    }, [categorySelected])
 
     // Fazendo uma requisição do tipo delete
    async function handleCloseOrder(){
@@ -84,9 +113,15 @@ export default function Order(){
                 </TouchableOpacity>
             )}
 
-           <TouchableOpacity style={styles.input}>
-                <Text style={{color: '#fff'}}>Pizza Pizzaria</Text>
-           </TouchableOpacity>
+            {products.length !== 0 && (
+                <TouchableOpacity style={styles.input}>
+                    <Text style={{color: '#fff'}}>
+                        {productSelected?.name}
+                    </Text>
+                </TouchableOpacity>
+
+            )}
+
 
         <View style={styles.qtdContainer}>
             <Text style={styles.qtdText}>Quantidade</Text>
