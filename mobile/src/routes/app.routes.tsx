@@ -6,7 +6,11 @@ import Dashboard from '../pages/Dashboard';
     function AppRoutes(){
         return(
             <stack.Navigator>
-                <stack.Screen  name='Dashboard' component={Dashboard}/>
+                <stack.Screen
+                 name='Dashboard'
+                 component={Dashboard}
+                 options={{headerShown: false}}
+                />
             </stack.Navigator>
         )
     }
