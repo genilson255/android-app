@@ -68,7 +68,8 @@ const styled = StyleSheet.create({
         color: "#12a",
         marginRight: 10,
         marginTop: 10,
-        justifyContent: 'flex-end',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     },
     title: {
         textAlign: "center",
