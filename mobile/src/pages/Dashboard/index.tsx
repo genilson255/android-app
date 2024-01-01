@@ -12,6 +12,8 @@ import { useNavigation } from '@react-navigation/native'; // Navegação de rota
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {StackParamsList} from '../../routes/app.routes';
 
+import { api } from '../../services/api';
+
 export default function Dashboard(){
     const navigation = useNavigation<NativeStackNavigationProp<StackParamsList>>();
     const {signOut, user} = useContext(AuthContext);
@@ -22,7 +24,13 @@ export default function Dashboard(){
             return;
         }
         // Precisa fazer a requisição e abrir a mesa e navegar para a proxima tela
-        navigation.navigate("Order", {number: number, order_id: 'ebe8c0be-b948-49ac-ab45-b6a2e0d8195c'})
+        const response = await api.post("/order", {
+            name: 'name',
+            table: Number(number)
+        })
+        // console.log(response.data)
+        navigation.navigate("Order", {number: number, order_id: response.data.id});
+        setNumber('');
     }
 
     return(

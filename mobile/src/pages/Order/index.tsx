@@ -6,8 +6,10 @@ import {
     TouchableOpacity,
     TextInput
 } from "react-native";
-import {useRoute, RouteProp} from '@react-navigation/native';
+import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { toast } from "react-toastify";
+import { api } from "../../services/api";
 
 type RouteDetailParams = {
     Order:{
@@ -21,13 +23,28 @@ type OrderRouterProps = RouteProp<RouteDetailParams, 'Order'>
 export default function Order(){
 
     const route = useRoute<OrderRouterProps>();
+    const navigation = useNavigation();
+
+    // Fazendo uma requisição do tipo delete
+   async function handleCloseOrder(){
+        try {
+            await api.delete("/order", {
+                params:{
+                    order_id: route.params?.order_id,
+                }
+            })
+            navigation.goBack();
+        } catch (error) {
+            toast.warn(`Algo deu errado na requisição ${error}`)
+        }
+    }
 
     return(
         <View style={styles.container}>
            <View style={styles.header}>
             <Text style={styles.title}>MESA: {route.params.number}</Text>
 
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleCloseOrder}>
                 <Feather name="trash-2" size={28} color="#ff3f4b" />
             </TouchableOpacity>
            </View>
