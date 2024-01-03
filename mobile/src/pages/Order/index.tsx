@@ -136,9 +136,11 @@ export default function Order(){
            <View style={styles.header}>
             <Text style={styles.title}>MESA: {route.params.number}</Text>
 
-            <TouchableOpacity onPress={handleCloseOrder}>
-                <Feather name="trash-2" size={28} color="#ff3f4b" />
-            </TouchableOpacity>
+                {items.length === 0 && (
+                     <TouchableOpacity onPress={handleCloseOrder}>
+                       <Feather name="trash-2" size={28} color="#ff3f4b" />
+                    </TouchableOpacity>
+                )}
            </View>
 
             {category.length !== 0 && (

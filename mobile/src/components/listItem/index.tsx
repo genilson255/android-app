@@ -1,6 +1,12 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-
+import React, {useContext} from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity
+} from "react-native";
+import {Feather} from "@expo/vector-icons"
 
 export  interface ItemProps {
     data:{
@@ -18,6 +24,7 @@ type somaProps = {
 }
 
 export function ListItem({data}: ItemProps){
+    const {user} = useContext(AuthContext);
     function  somarItemArray({preco, quantidade}: somaProps){
         return(
             preco * quantidade
@@ -25,15 +32,37 @@ export function ListItem({data}: ItemProps){
     }
 
     return(
+        
         < View style={styles.container}>
-            <Text> Item: {data.name},  Qtd: {data.amount} - R$:{data.price}</Text>
-            <Text>{}</Text>
+
+            <Text style={styles.item}> Item: {data.name},  Qtd: {data.amount} - R$:{data.price}</Text>
+            <TouchableOpacity style={styles.button}>
+                <Feather name="trash-2" color="#ff3f4b" size={25}/>
+            </TouchableOpacity>
+
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: "#fff"
+        backgroundColor: "#101026",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "space-between",
+        flexDirection: "row",
+        marginBottom: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 4,
+        borderWidth: 0.3,
+        borderColor: "#8a8a8a"
+    },
+    item: {
+        color: "#fff",
+        fontWeight: "bold"
+    },
+    button: {
+
     }
 })
