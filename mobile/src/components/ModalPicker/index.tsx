@@ -16,6 +16,7 @@ interface ModalPickerProps{
 }
 
 const {width: WIDTH, height: HEIGHT} = Dimensions.get('window'); // Pegando as dimenções da tela do user
+
 export function ModalPicker({
     options,
     handleCloseModal,
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     content:{
-        width: WIDTH - 20,
+        width: WIDTH - 1,
         height: HEIGHT / 2,
         backgroundColor: "#fff",
         borderWidth: 1,
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     item:{
         margin: 18,
         fontSize: 14,
-        color: '#101026',
+        color: '#000',
         fontWeight: 'bold'
     }
 })

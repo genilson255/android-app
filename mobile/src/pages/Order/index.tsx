@@ -5,13 +5,15 @@ import {
     StyleSheet,
     TouchableOpacity,
     TextInput,
-    Modal
+    Modal,
+    FlatList
 } from "react-native";
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { toast } from "react-toastify";
 import { api } from "../../services/api";
 import { ModalPicker } from "../../components/ModalPicker";
+import { ListItem } from "../../components/listItem";
 
 
 export type RouteDetailParams = {
@@ -32,6 +34,14 @@ export type CategoryProps = {
     name: string
 }
 
+export type ItemProps = {
+    id: string,
+    product_id: string,
+    price: string | undefined,
+    name: string,
+    amount: string | number
+}
+
 type OrderRouterProps = RouteProp<RouteDetailParams, 'Order'>
 
 export default function Order(){
@@ -48,6 +58,7 @@ export default function Order(){
     const [modalProductVisible, setModalProductVisible] = useState(false);
 
     const [amount, setAmount] = useState('1');
+    const [items, setItems] = useState<ItemProps[] | []>([])
 
     useEffect(() => {
         async function loadInfo(){
@@ -86,7 +97,7 @@ export default function Order(){
             })
             navigation.goBack();
         } catch (error) {
-            toast.warn(`Algo deu errado na requisição ${error}`)
+            console.log(`Algo deu errado na requisição ${error}`)
         }
     }
 
@@ -96,6 +107,27 @@ export default function Order(){
 
      function handleChangeProduct(item: ProductProps){
         setProductSelected(item)
+    }
+
+    // Fazendo a chamada a api
+    async function handleAddItem(){
+        const response = await api.post("/order/add", {
+            order_id: route.params?.order_id,
+            product_id: productSelected?.id,
+            amount: Number(amount),
+            price: productSelected?.price,
+        })
+        // Criando uma lista com os item vindo do backend para passar pro setItem
+        let data = {
+            id: response.data.id,
+            product_id: productSelected?.id as string,
+            name: productSelected?.name as string,
+            price: productSelected?.price as string,
+            amount: amount,
+        }
+        // Usando o spreed operation e mandando para o state
+        setItems(oldArray => [...oldArray, data])
+
     }
 
 
@@ -141,14 +173,30 @@ export default function Order(){
         </View>
 
         <View style={styles.actions}>
-            <TouchableOpacity style={styles.buttonAdd}>
+            <TouchableOpacity style={styles.buttonAdd}
+            onPress={handleAddItem}
+
+            >
                 <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+                style={[styles.button, {opacity: items.length === 0 ? 0.3 : 1}]}
+                disabled={items.length === 0}
+            >
                 <Text style={styles.buttonText}>Avancar</Text>
             </TouchableOpacity>
         </View>
+
+        <FlatList
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, marginTop: 24}}
+        data={items} // Qual a sua lista de items que vai esta dentro do useState
+        keyExtractor={ (item) => item.id} // Para saber qual o id de cada item
+        renderItem={ ({ item }) => <ListItem data={item}/>} // Forma como eu quero que seja renderizado a tela
+
+        />
+
         <Modal
         transparent={true}
         visible={modalCategoryVisible}
@@ -171,8 +219,8 @@ export default function Order(){
                 handleCloseModal={ () => setModalProductVisible(false)}
                 options={products}
                 selectedItem={handleChangeProduct}
-            />
 
+            />
         </Modal>
 
         </View>
@@ -236,7 +284,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText:{
-        color: "#101026",
+        color: "#8a8a8a",
         fontSize: 18,
         fontWeight: 'bold'
     },
