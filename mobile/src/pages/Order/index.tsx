@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { toast } from "react-toastify";
 import { api } from "../../services/api";
 import { ModalPicker } from "../../components/ModalPicker";
 import { ListItem } from "../../components/listItem";
@@ -26,7 +25,7 @@ export type RouteDetailParams = {
 export type ProductProps = {
     id: string,
     name: string,
-    price: string
+    // price: string | number | undefined
 }
 
 export type CategoryProps = {
@@ -37,7 +36,7 @@ export type CategoryProps = {
 export type ItemProps = {
     id: string,
     product_id: string,
-    price: string | undefined,
+    // price: string | number | undefined,
     name: string,
     amount: string | number
 }
@@ -90,7 +89,7 @@ export default function Order(){
     // Fazendo uma requisição do tipo delete
    async function handleCloseOrder(){
         try {
-            await api.delete("/order", {
+            await api.delete("/delete/order", {
                 params:{
                     order_id: route.params?.order_id,
                 }
@@ -115,19 +114,33 @@ export default function Order(){
             order_id: route.params?.order_id,
             product_id: productSelected?.id,
             amount: Number(amount),
-            price: productSelected?.price,
+            // price: productSelected?.price as string,
         })
         // Criando uma lista com os item vindo do backend para passar pro setItem
         let data = {
             id: response.data.id,
             product_id: productSelected?.id as string,
             name: productSelected?.name as string,
-            price: productSelected?.price as string,
+            // price: productSelected?.price as number,
             amount: amount,
         }
         // Usando o spreed operation e mandando para o state
         setItems(oldArray => [...oldArray, data])
 
+    }
+
+    async function handleDeleteItem(item_id: string){
+        // Fazendo a requisição delete
+        // alert("CLicou" + item_id)
+        await api.delete('/delete/item', {
+            params: {
+                item_id: item_id
+            }
+        })
+        let removeItem = items.filter(item => {
+            return (item.id !== item_id)
+        })
+        setItems(removeItem)
     }
 
 
@@ -138,7 +151,7 @@ export default function Order(){
 
                 {items.length === 0 && (
                      <TouchableOpacity onPress={handleCloseOrder}>
-                       <Feather name="trash-2" size={28} color="#ff3f4b" />
+                       <Feather name="trash-2" size={28} color="#ff3f" />
                     </TouchableOpacity>
                 )}
            </View>
@@ -195,7 +208,7 @@ export default function Order(){
         style={{ flex: 1, marginTop: 24}}
         data={items} // Qual a sua lista de items que vai esta dentro do useState
         keyExtractor={ (item) => item.id} // Para saber qual o id de cada item
-        renderItem={ ({ item }) => <ListItem data={item}/>} // Forma como eu quero que seja renderizado a tela
+        renderItem={ ({ item }) => <ListItem data={item} deleteItem={handleDeleteItem}/>} // Forma como eu quero que seja renderizado a tela
 
         />
 

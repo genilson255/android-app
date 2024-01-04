@@ -12,31 +12,27 @@ export  interface ItemProps {
     data:{
         id: string,
         product_id: string,
-        price: string,
+        // price: string,
         name: string,
         amount: string | number
-    }
+    };
+    deleteItem: (item_id: string) => void;
 }
 
-type somaProps = {
-    preco: number,
-    quantidade: number
-}
 
-export function ListItem({data}: ItemProps){
-    const {user} = useContext(AuthContext);
-    function  somarItemArray({preco, quantidade}: somaProps){
-        return(
-            preco * quantidade
-        )
-    }
+export function ListItem({data, deleteItem}: ItemProps){
+
+    function handleDeleteItem(){
+        deleteItem(data.id);
+    };
 
     return(
-        
+
         < View style={styles.container}>
 
-            <Text style={styles.item}> Item: {data.name},  Qtd: {data.amount} - R$:{data.price}</Text>
-            <TouchableOpacity style={styles.button}>
+            <Text style={styles.item}> Item: {data.name},  Qtd: {data.amount}</Text>
+
+            <TouchableOpacity style={styles.button} onPress={handleDeleteItem}>
                 <Feather name="trash-2" color="#ff3f4b" size={25}/>
             </TouchableOpacity>
 
