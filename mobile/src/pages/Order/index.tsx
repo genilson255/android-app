@@ -5,13 +5,17 @@ import {
     StyleSheet,
     TouchableOpacity,
     TextInput,
-    Modal
+    Modal,
+    FlatList
 } from "react-native";
 import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import { toast } from "react-toastify";
 import { api } from "../../services/api";
 import { ModalPicker } from "../../components/ModalPicker";
+import { ListItem } from "../../components/listItem";
+
+import {NativeStackNavigationProp} from "@react-navigation/native-stack";
+import { StackParamsList } from "../../routes/app.routes";
 
 
 export type RouteDetailParams = {
@@ -24,7 +28,7 @@ export type RouteDetailParams = {
 export type ProductProps = {
     id: string,
     name: string,
-    price: string
+    // price: string | number | undefined
 }
 
 export type CategoryProps = {
@@ -32,12 +36,20 @@ export type CategoryProps = {
     name: string
 }
 
+export type ItemProps = {
+    id: string,
+    product_id: string,
+    // price: string | number | undefined,
+    name: string,
+    amount: string | number
+}
+
 type OrderRouterProps = RouteProp<RouteDetailParams, 'Order'>
 
 export default function Order(){
 
     const route = useRoute<OrderRouterProps>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NativeStackNavigationProp<StackParamsList>>();
 
     const [category, setCategory] = useState<CategoryProps[] | []>([]);
     const [categorySelected, setCategorySelected] = useState<CategoryProps | undefined>();
@@ -48,6 +60,7 @@ export default function Order(){
     const [modalProductVisible, setModalProductVisible] = useState(false);
 
     const [amount, setAmount] = useState('1');
+    const [items, setItems] = useState<ItemProps[] | []>([])
 
     useEffect(() => {
         async function loadInfo(){
@@ -79,19 +92,65 @@ export default function Order(){
     // Fazendo uma requisição do tipo delete
    async function handleCloseOrder(){
         try {
-            await api.delete("/order", {
+            await api.delete("/delete/order", {
                 params:{
                     order_id: route.params?.order_id,
                 }
             })
             navigation.goBack();
         } catch (error) {
-            toast.warn(`Algo deu errado na requisição ${error}`)
+            console.log(`Algo deu errado na requisição ${error}`)
         }
     }
 
     function handleChangeCategory(item: CategoryProps){
         setCategorySelected(item)
+    }
+
+     function handleChangeProduct(item: ProductProps){
+        setProductSelected(item)
+    }
+
+    // Fazendo a chamada a api
+    async function handleAddItem(){
+        const response = await api.post("/order/add", {
+            order_id: route.params?.order_id,
+            product_id: productSelected?.id,
+            amount: Number(amount),
+            // price: productSelected?.price as string,
+        })
+        // Criando uma lista com os item vindo do backend para passar pro setItem
+        let data = {
+            id: response.data.id,
+            product_id: productSelected?.id as string,
+            name: productSelected?.name as string,
+            // price: productSelected?.price as number,
+            amount: amount,
+        }
+        // Usando o spreed operation e mandando para o state
+        setItems(oldArray => [...oldArray, data])
+
+    }
+
+    async function handleDeleteItem(item_id: string){
+        // Fazendo a requisição delete
+        // alert("CLicou" + item_id)
+        await api.delete('/delete/item', {
+            params: {
+                item_id: item_id
+            }
+        })
+        let removeItem = items.filter(item => {
+            return (item.id !== item_id)
+        })
+        setItems(removeItem)
+    }
+
+    function handleFinishOrder(){
+        navigation.navigate("FinishOrder",
+        {number: route.params?.number,
+            order_id: route.params?.order_id
+        });
     }
 
 
@@ -100,9 +159,11 @@ export default function Order(){
            <View style={styles.header}>
             <Text style={styles.title}>MESA: {route.params.number}</Text>
 
-            <TouchableOpacity onPress={handleCloseOrder}>
-                <Feather name="trash-2" size={28} color="#ff3f4b" />
-            </TouchableOpacity>
+                {items.length === 0 && (
+                     <TouchableOpacity onPress={handleCloseOrder}>
+                       <Feather name="trash-2" size={28} color="#ff3f" />
+                    </TouchableOpacity>
+                )}
            </View>
 
             {category.length !== 0 && (
@@ -114,7 +175,7 @@ export default function Order(){
             )}
 
             {products.length !== 0 && (
-                <TouchableOpacity style={styles.input}>
+                <TouchableOpacity style={styles.input} onPress={() => setModalProductVisible(true)}>
                     <Text style={{color: '#fff'}}>
                         {productSelected?.name}
                     </Text>
@@ -137,14 +198,31 @@ export default function Order(){
         </View>
 
         <View style={styles.actions}>
-            <TouchableOpacity style={styles.buttonAdd}>
+            <TouchableOpacity style={styles.buttonAdd}
+            onPress={handleAddItem}
+
+            >
                 <Text style={styles.buttonText}>+</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+                style={[styles.button, {opacity: items.length === 0 ? 0.3 : 1}]}
+                disabled={items.length === 0}
+                onPress={handleFinishOrder}
+            >
                 <Text style={styles.buttonText}>Avancar</Text>
             </TouchableOpacity>
         </View>
+
+        <FlatList
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, marginTop: 24}}
+        data={items} // Qual a sua lista de items que vai esta dentro do useState
+        keyExtractor={ (item) => item.id} // Para saber qual o id de cada item
+        renderItem={ ({ item }) => <ListItem data={item} deleteItem={handleDeleteItem}/>} // Forma como eu quero que seja renderizado a tela
+
+        />
+
         <Modal
         transparent={true}
         visible={modalCategoryVisible}
@@ -156,6 +234,19 @@ export default function Order(){
             selectedItem={handleChangeCategory}
             />
 
+        </Modal>
+
+        <Modal
+        transparent={true}
+        visible={modalProductVisible}
+        animationType="fade"
+        >
+            <ModalPicker
+                handleCloseModal={ () => setModalProductVisible(false)}
+                options={products}
+                selectedItem={handleChangeProduct}
+
+            />
         </Modal>
 
         </View>
@@ -219,7 +310,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText:{
-        color: "#101026",
+        color: "#8a8a8a",
         fontSize: 18,
         fontWeight: 'bold'
     },

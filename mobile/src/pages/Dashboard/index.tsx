@@ -36,11 +36,13 @@ export default function Dashboard(){
     return(
         <>
            <View style={styled.deslogar}>
-            <Text style={styled.userLodado}>Atendente: {user?.name}
-            <TouchableOpacity onPress={signOut}>
-                <Text >Sair</Text>
-            </TouchableOpacity>
-           </Text>
+                <Text style={styled.userLodado}>Atendente: {user?.name}
+
+                    <TouchableOpacity onPress={signOut}>
+                        <Text style={styled.saindo}>Sair</Text>
+                    </TouchableOpacity>
+
+            </Text>
             </View>
 
             <SafeAreaView style={styled.areaView}>
@@ -74,10 +76,10 @@ const styled = StyleSheet.create({
         textAlign: "right",
         fontWeight: "bold",
         color: "#12a",
-        marginRight: 10,
-        marginTop: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between'
+        // marginRight: 10,
+        // marginTop: 10,
+        justifyContent: 'space-between',
+        // flexDirection: "row"
     },
     title: {
         textAlign: "center",
@@ -108,23 +110,31 @@ const styled = StyleSheet.create({
     btnText:{
         fontSize: 18,
         color: '#101026',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        // justifyContent: "flex-end",
     },
     sair:{
-        // width: '50%',
+        width: '50%',
         // height: 40,
-        backgroundColor: '#3fffa3',
-        borderRadius: 4,
+        // backgroundColor: '#3fffa3',
+        // borderRadius: 4,
         // marginVertical: 12,
-        justifyContent: 'center',
-        alignItems: 'center'
+        // justifyContent: 'center',
+        // alignItems: 'center'
+    },
+    saindo: {
+        flexDirection: "row",
+        marginLeft: 20,
+        textAlign: 'right'
+
     },
     deslogar:{
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         // alignContent: 'space-around',
-        alignContent: 'space-between',
-        marginLeft: 10
+        // alignContent: 'space-between',
+        marginLeft: 10,
         // alignContent: 'center'
+        justifyContent: "space-between"
     }
 })
