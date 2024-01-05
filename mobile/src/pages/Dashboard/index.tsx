@@ -111,8 +111,7 @@ const styled = StyleSheet.create({
         fontSize: 18,
         color: '#101026',
         fontWeight: 'bold',
-        // justifyContent: "space-between"
-        justifyContent: "flex-end",
+        // justifyContent: "flex-end",
     },
     sair:{
         width: '50%',
@@ -136,5 +135,6 @@ const styled = StyleSheet.create({
         // alignContent: 'space-between',
         marginLeft: 10,
         // alignContent: 'center'
+        justifyContent: "space-between"
     }
 })
